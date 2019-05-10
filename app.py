@@ -140,6 +140,21 @@ class vigilanceClass(Resource):
             vigilance_space.abort(400, e.__doc__, status="Invalid departement",
                                 statusCode="400")
 
+product_space = app.namespace('product', description='Get product description with barcode (13) input')
+@product_space.route('/<int:barcode>', methods=['GET'])
+class productClass(Resource):
+    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
+             params={'barcode': 'Give the number barcode'})
+    def get(self,barcode=8002270014901):
+        from ModuleProduct import getproduct
+        try:
+            if len(str(barcode)) == 13:
+                result = getproduct(barcode)
+                return result
+        except Exception as e:
+            product_space.abort(400, e.__doc__, status="Invalid barcode",
+                                statusCode="400")
+
 if __name__ == '__main__':
     flask_app.run(debug=True)
     #app.run()
