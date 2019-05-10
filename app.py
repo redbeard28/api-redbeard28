@@ -6,6 +6,8 @@ from flask import Flask, jsonify
 from flask_restplus import Api, Resource, fields
 
 
+
+
 flask_app = Flask(__name__)
 app = Api(app = flask_app,
 		  version = "1.0",
@@ -53,7 +55,7 @@ class WeatherCityClass(Resource):
 
 
     @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
-             params={'city': 'Give the name of the city (ex: Chartres or Paris'})
+             params={'city': 'Give the name of the city (ex: Chartres or Paris)'})
     #@app.expect(model)
     def get(self, city='Chartres'):
         try:
@@ -87,7 +89,7 @@ sunrise_space = app.namespace('sunrise', description='Get the sunrise')
 class SunriseCityClass(Resource):
 
     @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
-             params={'city': 'Give the name of the city (ex: Chartres or Paris'})
+             params={'city': 'Give the name of the city (ex: Chartres or Paris)'})
     #@app.expect(model)
     def get(self,city='Chartres'):
         try:
@@ -123,8 +125,20 @@ class SunriseCityClass(Resource):
         #    url = "https://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid={}".format(city, api_key)
         #    r = requests.get(url)
         #    return "HTML ERROR : " + str(r.status_code)
-
-
+vigilance_space = app.namespace('vigilance', description='Get the vigilance')
+@vigilance_space.route('/<int:departement>', methods=['GET'])
+class vigilanceClass(Resource):
+    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
+             params={'departement': 'Give the number of departement (ex: 64)'})
+    def get(self,departement=64):
+        from ModuleVigilance import getvigilance
+        try:
+            if len(str(departement)) >= 2:
+                result = getvigilance(departement)
+                return result
+        except Exception as e:
+            vigilance_space.abort(400, e.__doc__, status="Invalid departement",
+                                statusCode="400")
 
 if __name__ == '__main__':
     flask_app.run(debug=True)
