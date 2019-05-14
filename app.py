@@ -212,11 +212,11 @@ class productClass(Resource):
     @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Server Errorr'})
     def get(self):
         try:
-            from ModuleMyip import getMyIp
+            from ModuleMyip import getIP
         except ImportError:
             return "Error Importing Module for MyIP"
 
-        return getMyIp()
+        return getIP()
 
 
 if __name__ == '__main__':
