@@ -140,6 +140,22 @@ class vigilanceClass(Resource):
             vigilance_space.abort(400, e.__doc__, status="Invalid departement",
                                 statusCode="400")
 
+moustique_space = app.namespace('moustique', description='Get the vigilance for moustique')
+@moustique_space.route('/<int:departement>/<int:type>', methods=['GET'])
+class vigilanceClass(Resource):
+    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
+             params={'departement': 'Give the number of departement (ex: 64)',
+                     'type': 'Give moustique type (1: moustique, 2: moustique tigre)'})
+    def get(self,departement=64,type=1):
+        from ModuleMoustique import getmoustiqueinfo
+        try:
+            if len(str(departement)) >= 2:
+                result = getmoustiqueinfo(departement,type)
+                return result
+        except Exception as e:
+            moustique_space.abort(400, e.__doc__, status="Invalid departement",
+                                statusCode="400")
+
 product_space = app.namespace('product', description='Get product description with barcode (13) input')
 @product_space.route('/<int:barcode>', methods=['GET'])
 class productClass(Resource):
@@ -154,6 +170,54 @@ class productClass(Resource):
         except Exception as e:
             product_space.abort(400, e.__doc__, status="Invalid barcode",
                                 statusCode="400")
+
+iss_space = app.namespace('issposition', description='Get ISS Trottle on Word-MAP')
+@iss_space.route('/', methods=['GET'])
+class isspositionClass(Resource):
+    @app.doc(responses={200: 'OK', 400: 'Invalid Argument'})
+    def get(self):
+        import turtle
+        try:
+            url = "http://api.open-notify.org/iss-now.json"
+            r = requests.get(url)
+            iss = r.json()
+            if iss['message'] != 'success':
+                message = "ERROR FROM ISS"
+                print(message)
+
+            iss_lat = float(iss['iss_position']['latitude'])
+            iss_lon = float(iss['iss_position']['longitude'])
+
+
+            # Display information on world map using Python Turtle
+            screen = turtle.Screen()
+            screen.setup(720, 360)
+            screen.setworldcoordinates(-180, -90, 180, 90)
+            # Load the world map picture
+            screen.bgpic("world-map.gif")
+
+            screen.register_shape("iss.gif")
+            iss = turtle.Turtle()
+            iss.shape("iss.gif")
+            iss.setheading(45)
+            iss.penup()
+            iss.goto(iss_lon, iss_lat)
+        except Exception as e:
+            iss_space.abort(400, e.__doc__, status="ERRO from ISS",
+                                statusCode="400")
+
+myip_space = app.namespace('ip', description='Get Your IP')
+@myip_space.route('/myip', methods=['GET'])
+class productClass(Resource):
+    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Server Errorr'})
+    def get(self):
+        try:
+            from ModuleMyip import getMyIp
+        except ImportError:
+            return "Error Importing Module for MyIP"
+
+        return getMyIp()
+
 
 if __name__ == '__main__':
     flask_app.run(debug=True)
