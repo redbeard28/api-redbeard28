@@ -208,7 +208,7 @@ class isspositionClass(Resource):
 
 myip_space = app.namespace('ip', description='Get Your IP')
 @myip_space.route('/myip', methods=['GET'])
-class productClass(Resource):
+class myipClass(Resource):
     @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Server Errorr'})
     def get(self):
         try:
@@ -217,7 +217,16 @@ class productClass(Resource):
             return "Error Importing Module for MyIP"
 
         return getIP()
+@myip_space.route('/geoip', methods=['GET'])
+class geoipClass(Resource):
+    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Server Errorr'})
+    def get(self):
+        try:
+            from ModuleMyip import getGeo
+        except ImportError:
+            return "Error Importing Module for MyIP"
 
+        return getGeo()
 
 if __name__ == '__main__':
     flask_app.run(debug=True)
