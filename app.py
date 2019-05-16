@@ -171,41 +171,6 @@ class productClass(Resource):
             product_space.abort(400, e.__doc__, status="Invalid barcode",
                                 statusCode="400")
 
-iss_space = app.namespace('issposition', description='Get ISS Trottle on Word-MAP')
-@iss_space.route('/', methods=['GET'])
-class isspositionClass(Resource):
-    @app.doc(responses={200: 'OK', 400: 'Invalid Argument'})
-    def get(self):
-        import turtle
-        try:
-            url = "http://api.open-notify.org/iss-now.json"
-            r = requests.get(url)
-            iss = r.json()
-            if iss['message'] != 'success':
-                message = "ERROR FROM ISS"
-                print(message)
-
-            iss_lat = float(iss['iss_position']['latitude'])
-            iss_lon = float(iss['iss_position']['longitude'])
-
-
-            # Display information on world map using Python Turtle
-            screen = turtle.Screen()
-            screen.setup(720, 360)
-            screen.setworldcoordinates(-180, -90, 180, 90)
-            # Load the world map picture
-            screen.bgpic("world-map.gif")
-
-            screen.register_shape("iss.gif")
-            iss = turtle.Turtle()
-            iss.shape("iss.gif")
-            iss.setheading(45)
-            iss.penup()
-            iss.goto(iss_lon, iss_lat)
-        except Exception as e:
-            iss_space.abort(400, e.__doc__, status="ERRO from ISS",
-                                statusCode="400")
-
 myip_space = app.namespace('ip', description='Get Your IP')
 @myip_space.route('/myip', methods=['GET'])
 class myipClass(Resource):
@@ -227,6 +192,41 @@ class geoipClass(Resource):
             return "Error Importing Module for MyIP"
 
         return getGeo()
+
+#iss_space = app.namespace('issposition', description='Get ISS Trottle on Word-MAP')
+#@iss_space.route('/', methods=['GET'])
+#class isspositionClass(Resource):
+#    @app.doc(responses={200: 'OK', 400: 'Invalid Argument'})
+#    def get(self):
+#        import turtle
+#        try:
+#            url = "http://api.open-notify.org/iss-now.json"
+#            r = requests.get(url)
+#            iss = r.json()
+#            if iss['message'] != 'success':
+#                message = "ERROR FROM ISS"
+#                print(message)
+#
+#            iss_lat = float(iss['iss_position']['latitude'])
+#            iss_lon = float(iss['iss_position']['longitude'])
+#
+#
+#            # Display information on world map using Python Turtle
+#            screen = turtle.Screen()
+#            screen.setup(720, 360)
+#            screen.setworldcoordinates(-180, -90, 180, 90)
+#            # Load the world map picture
+#            screen.bgpic("world-map.gif")
+#
+#            screen.register_shape("iss.gif")
+#            iss = turtle.Turtle()
+#            iss.shape("iss.gif")
+#            iss.setheading(45)
+#            iss.penup()
+#            iss.goto(iss_lon, iss_lat)
+#        except Exception as e:
+#            iss_space.abort(400, e.__doc__, status="ERRO from ISS",
+#                                statusCode="400")
 
 if __name__ == '__main__':
     flask_app.run(debug=True)
