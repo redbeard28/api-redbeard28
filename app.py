@@ -185,18 +185,18 @@ class vigilanceAirQualityClass(Resource):
             vigilance_space.abort(400, e.__doc__, status="Invalid departement",
                                 statusCode="400")
 
-@vigilance_space.route('/airquality/geoip', methods=['GET'])
-class vigilanceAirQualityByIpClass(Resource):
-    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
-             params={'NONE': 'no inputs needs'})
-    def get(self):
-        from ModuleAirQuality import getAirQualityByIp
-        try:
-            quality = getAirQualityByIp()
-            return quality
-        except Exception as e:
-            vigilance_space.abort(400, e.__doc__, status="Invalid departement",
-                                statusCode="400")
+#@vigilance_space.route('/airquality/geoip', methods=['GET'])
+#class vigilanceAirQualityByIpClass(Resource):
+#    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
+#             params={'NONE': 'no inputs needs'})
+#    def get(self):
+#        from ModuleAirQuality import getAirQualityByIp
+#        try:
+#            quality = getAirQualityByIp()
+#            return quality
+#        except Exception as e:
+#            vigilance_space.abort(400, e.__doc__, status="Invalid departement",
+#                                statusCode="400")
 
 product_space = app.namespace('product', description='Get product description with barcode (13) input')
 @product_space.route('/<int:barcode>', methods=['GET'])
@@ -214,27 +214,27 @@ class productClass(Resource):
             product_space.abort(400, e.__doc__, status="Invalid barcode",
                                 statusCode="400")
 
-myip_space = app.namespace('ip', description='Get Your IP')
-@myip_space.route('/myip', methods=['GET'])
-class myipClass(Resource):
-    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Server Errorr'})
-    def get(self):
-        try:
-            from ModuleMyip import getIP
-            return getIP()
-        except ImportError:
-            return "Error Importing Module for MyIP"
+#myip_space = app.namespace('ip', description='Get Your IP')
+#@myip_space.route('/myip', methods=['GET'])
+#class myipClass(Resource):
+#    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Server Errorr'})
+#    def get(self):
+#        try:
+#            from ModuleMyip import getIP
+#            return getIP()
+#        except ImportError:
+#            return "Error Importing Module for MyIP"
 
 
-@myip_space.route('/geoip', methods=['GET'])
-class geoipClass(Resource):
-    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Server Errorr'})
-    def get(self):
-        try:
-            from ModuleMyip import getGeo
-            return getGeo()
-        except ImportError:
-            return "Error Importing Module for MyIP"
+#@myip_space.route('/geoip', methods=['GET'])
+#class geoipClass(Resource):
+#    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Server Errorr'})
+#    def get(self):
+#        try:
+#            from ModuleMyip import getGeo
+#            return getGeo()
+#        except ImportError:
+#            return "Error Importing Module for MyIP"
 
 
 

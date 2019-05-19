@@ -32,10 +32,16 @@ def getIP():
     #return ip_dict['ip']
     from flask import request
     ip_string = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    #ip_string = request.environ.get('HTTP_ORIGIN', request.remote_addr)
+    environ = request.environ
+    message_contents = []
+    for key in sorted(environ.keys()):
+        message_contents.append("%s: %s" % (key, environ.get(key)))
+    print(message_contents)
     ip_dict = {
         "ip": str(ip_string)
     }
-    return str(ip_string)
+    return str(message_contents)
     #return json.dumps(ip_dict)
 
 
