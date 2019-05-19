@@ -170,6 +170,34 @@ class vigilancePollensClass(Resource):
             vigilance_space.abort(400, e.__doc__, status="Invalid departement",
                                 statusCode="400")
 
+@vigilance_space.route('/airquality/<string:country>/<string:state>/<string:city>', methods=['GET'])
+class vigilanceAirQualityClass(Resource):
+    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
+             params={'country': 'Give the country name (ex: France)',
+                     'state': 'Give state name (ex: Centre or California...)',
+                     'city': 'Give the city name (ex: Los Angeles or Chartres or Paris...'})
+    def get(self,country,state,city):
+        from ModuleAirQuality import getAirQuality
+        try:
+            quality = getAirQuality(country,state,city)
+            return quality
+        except Exception as e:
+            vigilance_space.abort(400, e.__doc__, status="Invalid departement",
+                                statusCode="400")
+
+@vigilance_space.route('/airquality/geoip', methods=['GET'])
+class vigilanceAirQualityByIpClass(Resource):
+    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
+             params={'NONE': 'no inputs needs'})
+    def get(self):
+        from ModuleAirQuality import getAirQualityByIp
+        try:
+            quality = getAirQualityByIp()
+            return quality
+        except Exception as e:
+            vigilance_space.abort(400, e.__doc__, status="Invalid departement",
+                                statusCode="400")
+
 product_space = app.namespace('product', description='Get product description with barcode (13) input')
 @product_space.route('/<int:barcode>', methods=['GET'])
 class productClass(Resource):
