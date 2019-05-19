@@ -94,7 +94,7 @@ class SunriseCityClass(Resource):
     def get(self,city='Chartres'):
         try:
             api_key = get_api_key()
-        except api_keyError as e:
+        except Exception as e:
             weather_space.abort(401, e.__doc__, status="Could not retrieve openweathermap token", statusCode="401")
 
         try:
@@ -126,8 +126,8 @@ class SunriseCityClass(Resource):
         #    r = requests.get(url)
         #    return "HTML ERROR : " + str(r.status_code)
 vigilance_space = app.namespace('vigilance', description='Get the vigilance')
-@vigilance_space.route('/<int:departement>', methods=['GET'])
-class vigilanceClass(Resource):
+@vigilance_space.route('/flood/<int:departement>', methods=['GET'])
+class vigilanceFloodClass(Resource):
     @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
              params={'departement': 'Give the number of departement (ex: 64)'})
     def get(self,departement=64):
@@ -140,9 +140,8 @@ class vigilanceClass(Resource):
             vigilance_space.abort(400, e.__doc__, status="Invalid departement",
                                 statusCode="400")
 
-moustique_space = app.namespace('moustique', description='Get the vigilance for moustique')
-@moustique_space.route('/<int:departement>/<int:type>', methods=['GET'])
-class vigilanceClass(Resource):
+@vigilance_space.route('/moustique/<int:departement>/<int:type>', methods=['GET'])
+class vigilanceMoustiqueClass(Resource):
     @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
              params={'departement': 'Give the number of departement (ex: 64)',
                      'type': 'Give moustique type (1: moustique, 2: moustique tigre)'})
@@ -153,7 +152,22 @@ class vigilanceClass(Resource):
                 result = getmoustiqueinfo(departement,type)
                 return result
         except Exception as e:
-            moustique_space.abort(400, e.__doc__, status="Invalid departement",
+            vigilance_space.abort(400, e.__doc__, status="Invalid departement",
+                                statusCode="400")
+
+@vigilance_space.route('/pollens/<int:departement>/<int:type>', methods=['GET'])
+class vigilancePollensClass(Resource):
+    @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Mapping Key Error'},
+             params={'departement': 'Give the number of departement (ex: 64)',
+                     'type': 'Give plloens type (1: XXXX, 2: YYYY)'})
+    def get(self,departement=64,type=1):
+        from pollens import getPollensApiData
+        try:
+            if len(str(departement)) >= 2:
+                result = getPollensApiData(departement,type)
+                return result
+        except Exception as e:
+            vigilance_space.abort(400, e.__doc__, status="Invalid departement",
                                 statusCode="400")
 
 product_space = app.namespace('product', description='Get product description with barcode (13) input')
@@ -164,9 +178,10 @@ class productClass(Resource):
     def get(self,barcode=8002270014901):
         from ModuleProduct import getproduct
         try:
-            if len(str(barcode)) == 13:
-                result = getproduct(barcode)
-                return result
+            return getproduct(barcode)
+            #if len(str(barcode)) == 13:
+            #    result = getproduct(barcode)
+            #    return result
         except Exception as e:
             product_space.abort(400, e.__doc__, status="Invalid barcode",
                                 statusCode="400")
@@ -178,20 +193,22 @@ class myipClass(Resource):
     def get(self):
         try:
             from ModuleMyip import getIP
+            return getIP()
         except ImportError:
             return "Error Importing Module for MyIP"
 
-        return getIP()
+
 @myip_space.route('/geoip', methods=['GET'])
 class geoipClass(Resource):
     @app.doc(responses={200: 'OK', 400: 'Invalid Argument', 500: 'Server Errorr'})
     def get(self):
         try:
             from ModuleMyip import getGeo
+            return getGeo()
         except ImportError:
             return "Error Importing Module for MyIP"
 
-        return getGeo()
+
 
 #iss_space = app.namespace('issposition', description='Get ISS Trottle on Word-MAP')
 #@iss_space.route('/', methods=['GET'])
@@ -229,5 +246,5 @@ class geoipClass(Resource):
 #                                statusCode="400")
 
 if __name__ == '__main__':
-    flask_app.run(debug=True)
+    flask_app.run(debug=False)
     #app.run()

@@ -9,7 +9,7 @@ import requests
 import json
 
 def getData(dep,mType):
-    #type: 1 = moustique ; 2 = moustique tigre
+    # type 1 = moustique ; 2 = moustique tigre
     data = json.loads(requests.get("http://vigilance-moustiques.com/maps-manager/public/json/"+str(mType)).text)["alertes"]
     mStatus = ""
     for colorType in data:
